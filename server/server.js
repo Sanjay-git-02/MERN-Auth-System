@@ -7,7 +7,6 @@ import authRouter from "./database/routes/authRoutes.js";
 import userRouter from "./database/routes/userRoutes.js";
 
 const app = express();
-connectDatabase();
 const PORT = process.env.PORT;
 
 const allowedOrigins = [
@@ -29,6 +28,11 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.get("/", (req, res) => res.send("Server is Live!"));
 
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
+const startServer = async () => {
+  await connectDatabase();
+  app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+  });
+};
+
+startServer();
