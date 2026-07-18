@@ -2,7 +2,10 @@ import bcrypt from "bcryptjs";
 import userModel from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 import transporter from "../../config/nodeEmailer.js";
-import {EMAIL_VERIFY_TEMPLATE,PASSWORD_RESET_TEMPLATE} from "../../config/emailTemplates.js"
+import {
+  EMAIL_VERIFY_TEMPLATE,
+  PASSWORD_RESET_TEMPLATE,
+} from "../../config/emailTemplates.js";
 
 export const register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -30,8 +33,8 @@ export const register = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      secure: true,
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -77,8 +80,9 @@ export const login = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      secure: true,
+      sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     return res.json({ success: true });
@@ -91,8 +95,8 @@ export const logout = async (req, res) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      secure: true,
+      sameSite: "none",
     });
 
     return res.json({ success: true, message: "Logged out successfully" });
@@ -127,7 +131,10 @@ export const sendVerifyOtp = async (req, res) => {
       to: user.email,
       subject: "Welcome to this App",
       // text: `Here is your otp ${otp}.Verify your account`,
-      html:EMAIL_VERIFY_TEMPLATE.replace("{{otp}}",otp).replace("{{email}}",user.email)
+      html: EMAIL_VERIFY_TEMPLATE.replace("{{otp}}", otp).replace(
+        "{{email}}",
+        user.email,
+      ),
     };
 
     await transporter.sendMail(mailOptions);
@@ -178,7 +185,7 @@ export const isAuthenticated = async (req, res) => {
   }
 };
 
-export const sendResetOtp = async (req,res) => {
+export const sendResetOtp = async (req, res) => {
   const { email } = req.body;
 
   if (!email) {
@@ -203,7 +210,10 @@ export const sendResetOtp = async (req,res) => {
       to: user.email,
       subject: "Password Reset OTP",
       // text: `OTP for resetting your password is ${otp}.`,
-      html:PASSWORD_RESET_TEMPLATE.replace("{{otp}}",otp).replace("{{email}}",user.email)
+      html: PASSWORD_RESET_TEMPLATE.replace("{{otp}}", otp).replace(
+        "{{email}}",
+        user.email,
+      ),
     };
 
     await transporter.sendMail(mailOption);
