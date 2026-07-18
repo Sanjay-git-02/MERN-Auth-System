@@ -10,9 +10,20 @@ const app = express();
 connectDatabase();
 const PORT = process.env.PORT;
 
+const allowedOrigins = [
+  "https://mern-auth-system-web.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:3000",
+];
+
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: "*", credentials: false }));
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  }),
+);
 
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
